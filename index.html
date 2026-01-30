@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สุ่มเพลงฟังกันเถอะ</title>
+    <style>
+        /* --- การตั้งค่าธีม ฟ้า-ขาว-ดำ --- */
+        :root {
+            --primary-blue: #007bff;       /* สีฟ้าหลัก */
+            --dark-bg: #121212;            /* สีดำพื้นหลัง */
+            --card-bg: #1e1e1e;            /* สีดำเทาสำหรับกล่องข้อความ */
+            --text-white: #ffffff;         /* สีขาวตัวอักษร */
+            --text-gray: #b0b0b0;          /* สีเทาสำหรับรายละเอียด */
+            --hover-blue: #0056b3;         /* สีฟ้าเข้มเมื่อเอาเมาส์ชี้ */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--dark-bg);
+            color: var(--text-white);
+            font-family: 'Sarabun', sans-serif; /* แนะนำให้ใช้ฟอนต์ที่อ่านง่าย */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: linear-gradient(135deg, #000000 0%, #0a192f 100%);
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 123, 255, 0.2); /* เงาสีฟ้า */
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid #333;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: var(--primary-blue);
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .song-display {
+            margin: 30px 0;
+            min-height: 80px;
+        }
+
+        #song-title {
+            font-size: 22px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #artist-name {
+            font-size: 16px;
+            color: var(--text-gray);
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button {
+            background-color: var(--text-white);
+            color: var(--dark-bg);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        a.search-link {
+            text-decoration: none;
+            background-color: var(--primary-blue);
+            color: var(--text-white);
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: none; /* ซ่อนไว้ก่อนจนกว่าจะสุ่ม */
+        }
+
+        a.search-link:hover {
+            background-color: var(--hover-blue);
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+        }
+
+        /* Animation เล็กน้อยตอนสุ่ม */
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎵 Random Music</h1>
+        <hr style="border: 0; border-top: 1px solid #333; margin-bottom: 20px;">
+        
+        <div class="song-display">
+            <span id="song-title">กดปุ่มด้านล่างเพื่อสุ่มเพลง</span>
+            <span id="artist-name"></span>
+        </div>
+
+        <div class="btn-group">
+            <button onclick="randomSong()">🎲 สุ่มเพลงใหม่</button>
+            <a id="yt-link" href="#" target="_blank" class="search-link">🎧 ไปฟังเพลงนี้ (YouTube)</a>
+        </div>
+    </div>
+
+    <script>
+        // 1. เพิ่มรายชื่อเพลงที่ต้องการสุ่มตรงนี้
+        const playlist = [
+            { title: "เลือดกรุ๊ปบี", artist: "Chrrissa" },
+            { title: "OMG", artist: "NewJeans" },
+            { title: "Flowers", artist: "Miley Cyrus" },
+            { title: "ทรงอย่างแบด", artist: "Paper Planes" },
+            { title: "โต๊ะริม", artist: "Nont Tanont" },
+            { title: "As It Was", artist: "Harry Styles" },
+            { title: "วาดไว้", artist: "BOWKYLION" },
+            { title: "Anti-Hero", artist: "Taylor Swift" },
+            { title: "Die For You", artist: "The Weeknd" },
+            { title: "Cupid", artist: "Fifty Fifty" }
+        ];
+
+        function randomSong() {
+            // สุ่ม index
+            const randomIndex = Math.floor(Math.random() * playlist.length);
+            const song = playlist[randomIndex];
+
+            // ดึง Element มาจัดการ
+            const titleEl = document.getElementById('song-title');
+            const artistEl = document.getElementById('artist-name');
+            const linkEl = document.getElementById('yt-link');
+            const displayDiv = document.querySelector('.song-display');
+
+            // ใส่ข้อมูลลงหน้าเว็บ
+            titleEl.innerText = song.title;
+            artistEl.innerText = "ศิลปิน: " + song.artist;
+
+            // สร้างลิงค์ค้นหา YouTube
+            // ใช้ encodeURIComponent เพื่อแปลงชื่อเพลงที่มีวรรคหรือภาษาไทยให้เป็น URL ที่ถูกต้อง
+            const searchQuery = encodeURIComponent(song.title + " " + song.artist);
+            linkEl.href = `https://www.youtube.com/results?search_query=${searchQuery}`;
+            
+            // แสดงปุ่มฟังเพลง
+            linkEl.style.display = "inline-block";
+
+            // เพิ่ม Animation
+            displayDiv.classList.remove('fade-in');
+            void displayDiv.offsetWidth; // Trigger reflow
+            displayDiv.classList.add('fade-in');
+        }
+    </script>
+</body>
+</html>
