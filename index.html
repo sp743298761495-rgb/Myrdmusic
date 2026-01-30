@@ -3,178 +3,439 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>สุ่มเพลงฟังกันเถอะ</title>
+    <title>Music Random 300+</title>
     <style>
-        /* --- การตั้งค่าธีม ฟ้า-ขาว-ดำ --- */
         :root {
-            --primary-blue: #007bff;       /* สีฟ้าหลัก */
-            --dark-bg: #121212;            /* สีดำพื้นหลัง */
-            --card-bg: #1e1e1e;            /* สีดำเทาสำหรับกล่องข้อความ */
-            --text-white: #ffffff;         /* สีขาวตัวอักษร */
-            --text-gray: #b0b0b0;          /* สีเทาสำหรับรายละเอียด */
-            --hover-blue: #0056b3;         /* สีฟ้าเข้มเมื่อเอาเมาส์ชี้ */
+            --primary-blue: #007bff;
+            --dark-bg: #121212;
+            --card-bg: #1e1e1e;
+            --text-white: #ffffff;
+            --text-gray: #b0b0b0;
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background-color: var(--dark-bg);
             color: var(--text-white);
-            font-family: 'Sarabun', sans-serif; /* แนะนำให้ใช้ฟอนต์ที่อ่านง่าย */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            font-family: 'Sarabun', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh;
             background-image: linear-gradient(135deg, #000000 0%, #0a192f 100%);
         }
 
         .container {
             background-color: var(--card-bg);
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 123, 255, 0.2); /* เงาสีฟ้า */
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
+            padding: 30px; border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 123, 255, 0.15);
+            text-align: center; width: 90%; max-width: 500px;
             border: 1px solid #333;
         }
 
-        h1 {
-            margin-top: 0;
-            color: var(--primary-blue);
-            font-size: 24px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        .category-group {
+            display: flex; justify-content: center;
+            gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
         }
 
-        .song-display {
-            margin: 30px 0;
-            min-height: 80px;
+        .cat-btn {
+            background: #333; color: white; border: none;
+            padding: 8px 15px; border-radius: 20px; cursor: pointer;
+            font-size: 13px; transition: 0.3s;
         }
 
-        #song-title {
-            font-size: 22px;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
+        .cat-btn.active { background: var(--primary-blue); }
 
-        #artist-name {
-            font-size: 16px;
-            color: var(--text-gray);
-        }
+        .song-display { margin: 40px 0; min-height: 100px; }
+        #song-title { font-size: 24px; font-weight: bold; display: block; color: var(--primary-blue); }
+        #artist-name { font-size: 18px; color: var(--text-gray); margin-top: 10px; display: block; }
 
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        button {
-            background-color: var(--text-white);
-            color: var(--dark-bg);
-            border: none;
-            padding: 12px 20px;
-            border-radius: 30px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-        }
-
-        button:hover {
-            background-color: #e0e0e0;
-            transform: translateY(-2px);
+        .btn-group { display: flex; flex-direction: column; gap: 15px; }
+        
+        button#random-btn {
+            background-color: var(--text-white); color: black;
+            border: none; padding: 15px; border-radius: 30px;
+            font-size: 18px; font-weight: bold; cursor: pointer;
         }
 
         a.search-link {
-            text-decoration: none;
-            background-color: var(--primary-blue);
-            color: var(--text-white);
-            padding: 12px 20px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            display: none; /* ซ่อนไว้ก่อนจนกว่าจะสุ่ม */
+            text-decoration: none; background-color: transparent;
+            color: var(--primary-blue); border: 2px solid var(--primary-blue);
+            padding: 12px; border-radius: 30px; font-weight: bold;
+            display: none;
         }
 
-        a.search-link:hover {
-            background-color: var(--hover-blue);
-            box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
-        }
-
-        /* Animation เล็กน้อยตอนสุ่ม */
-        .fade-in {
-            animation: fadeIn 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .fade-in { animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🎵 Random Music</h1>
-        <hr style="border: 0; border-top: 1px solid #333; margin-bottom: 20px;">
-        
-        <div class="song-display">
-            <span id="song-title">กดปุ่มด้านล่างเพื่อสุ่มเพลง</span>
-            <span id="artist-name"></span>
-        </div>
-
-        <div class="btn-group">
-            <button onclick="randomSong()">🎲 สุ่มเพลงใหม่</button>
-            <a id="yt-link" href="#" target="_blank" class="search-link">🎧 ไปฟังเพลงนี้ (YouTube)</a>
-        </div>
+<div class="container">
+    <h2>🎵 วันนี้ฟังเพลงอะไรดี 🎵</h2>
+    
+    <div class="category-group">
+        <button class="cat-btn active" onclick="setCategory('all', this)">ทั้งหมด</button>
+        <button class="cat-btn" onclick="setCategory('thai', this)">T-POP</button>
+        <button class="cat-btn" onclick="setCategory('inter', this)">International</button>
+        <button class="cat-btn" onclick="setCategory('asia', this)">K-POP/Asia</button>
     </div>
 
-    <script>
-        // 1. เพิ่มรายชื่อเพลงที่ต้องการสุ่มตรงนี้
+    <div class="song-display" id="display-area">
+        <span id="song-title">พร้อมสุ่มเพลงหรือยัง?</span>
+        <span id="artist-name">เลือกหมวดหมู่แล้วกดปุ่มด้านล่าง</span>
+    </div>
+
+    <div class="btn-group">
+        <button id="random-btn" onclick="randomSong()">🎲 สุ่มเพลงใหม่</button>
+        <a id="yt-link" href="#" target="_blank" class="search-link">📺 ค้นหาบน YouTube</a>
+    </div>
+</div>
+
+<script>
+    let currentCategory = 'all';
+    
+    // ตัวอย่างรายชื่อเพลง (ใส่มาให้เป็นแนวทาง คุณสามารถ copy เพิ่มให้ครบ 300 ได้ง่ายๆ)
         const playlist = [
-            { title: "เลือดกรุ๊ปบี", artist: "Chrrissa" },
-            { title: "OMG", artist: "NewJeans" },
-            { title: "Flowers", artist: "Miley Cyrus" },
-            { title: "ทรงอย่างแบด", artist: "Paper Planes" },
-            { title: "โต๊ะริม", artist: "Nont Tanont" },
-            { title: "As It Was", artist: "Harry Styles" },
-            { title: "วาดไว้", artist: "BOWKYLION" },
-            { title: "Anti-Hero", artist: "Taylor Swift" },
-            { title: "Die For You", artist: "The Weeknd" },
-            { title: "Cupid", artist: "Fifty Fifty" }
-        ];
+        // === T-POP / THAI (100+ เพลง) ===
+        { title: "ซ่อนไม่หา", artist: "Jeff Satur", tag: "thai" },
+        { title: "ดาวหางฮัลเลย์", artist: "Fellow Fellow", tag: "thai" },
+        { title: "รักแรก", artist: "Nont Tanont", tag: "thai" },
+        { title: "ติดฝน", artist: "PiXXiE", tag: "thai" },
+        { title: "หยดน้ำตา", artist: "4EVE", tag: "thai" },
+        { title: "วาดไว้", artist: "Bowkylion", tag: "thai" },
+        { title: "นะหน้าทอง", artist: "Joey Phuwasit", tag: "thai" },
+        { title: "พิจารณา", artist: "Musketeers", tag: "thai" },
+        { title: "หมวยนี่คะ", artist: "Joey Phuwasit", tag: "thai" },
+        { title: "ท้องฟ้า", artist: "Paper", tag: "thai" },
+        { title: "ลาก่อน", artist: "YourMOOD", tag: "thai" },
+        { title: "เส้นขนาน", artist: "Gulf Kanawut", tag: "thai" },
+        { title: "ยินดี", artist: "Sarah Salola", tag: "thai" },
+        { title: "เกินต้าน", artist: "PiXXiE", tag: "thai" },
+        { title: "วัดปะหล่ะ?", artist: "4EVE", tag: "thai" },
+        { title: "บานปลาย", artist: "Bowkylion", tag: "thai" },
+        { title: "เพื่อนเล่น ไม่เล่นเพื่อน", artist: "Tilly Birds" , tag: "thai" },
+        { title: "ถ้าเราเจอกันอีก", artist: "Tilly Birds" , tag: "thai" },
+        { title: "คิดแต่ไม่ถึง", artist: "Tilly Birds" , tag: "thai" },
+        { title: "โต๊ะริม", artist: "Nont Tanont", tag: "thai" },
+        { title: "พิง", artist: "Nont Tanont", tag: "thai" },
+        { title: "สองใจ", artist: "ดา เอ็นโดรฟิน", tag: "thai" },
+        { title: "ดึงดัน", artist: "Cocktail feat. ตั๊ก ศิริพร", tag: "thai" },
+        { title: "สลักจิต", artist: "ป๊อบ ปองกูล", tag: "thai" },
+        { title: "เลือดกรุ๊ปบี", artist: "Chrrissa", tag: "thai" },
+        { title: "แฟนหล่อ", artist: "Lipta", tag: "thai" },
+        { title: "คอแห้ง", artist: "F.HERO x จ๊ะ นงผณี", tag: "thai" },
+        { title: "เฮอร์ไมโอน้อง", artist: "อูน ไดมอนด์เกรน", tag: "thai" },
+        { title: "เอาปากกามาวง", artist: "Bell Warisara", tag: "thai" },
+        { title: "จุ๊บภิรมย์", artist: "Sarin", tag: "thai" },
+        { title: "กักตัว", artist: "Violette Wautier", tag: "thai" },
+        { title: "ระวังใจ", artist: "Pure", tag: "thai" },
+        { title: "กลิ่นดอกไม้", artist: "Newery", tag: "thai" },
+        { title: "ดวงเดือน", artist: "Joey Phuwasit", tag: "thai" },
+        { title: "ฝนตกไหม", artist: "Three Man Down", tag: "thai" },
+        { title: "ข้างกัน", artist: "Three Man Down", tag: "thai" },
+        { title: "ถ้าเธอรักใครคนหนึ่ง", artist: "Ink Waruntorn", tag: "thai" },
+        { title: "สายตาหลอกกันไม่ได้", artist: "Ink Waruntorn", tag: "thai" },
+        { title: "ลบไม่ได้ช่วยให้ลืม", artist: "Ink Waruntorn", tag: "thai" },
+        { title: "วันเกิดฉันปีนี้", artist: "Three Man Down", tag: "thai" },
+        { title: "เลือกคนที่เขารักเรา", artist: "Three Man Down", tag: "thai" },
+        { title: "ไทม์แมชชีน", artist: "PUN", tag: "thai" },
+        { title: "KRYPTONITE", artist: "PUN", tag: "thai" },
+        { title: "แนะนำให้เป็นแฟนเรา", artist: "Bowkylion", tag: "thai" },
+        { title: "จังหวะตกหลุมรัก", artist: "DIDIxDADA", tag: "thai" },
+        { title: "ทักครับ", artist: "Lipta", tag: "thai" },
+        { title: "น้ำลาย", artist: "Txrbo x PEARWAH", tag: "thai" },
+        { title: "ทุกนาทีที่สวยงาม", artist: "Nont Tanont", tag: "thai" },
+        { title: "ขอบคุณที่ยินดี", artist: "Safeplanet", tag: "thai" },
+        { title: "ห้องกระจก", artist: "Safeplanet", tag: "thai" },
+        { title: "คำตอบ", artist: "Safeplanet", tag: "thai" },
+        { title: "ดินแดนแห่งความรัก", artist: "Crescendo", tag: "thai" },
+        { title: "คู่กัน", artist: "Scrubb", tag: "thai" },
+        { title: "ใกล้", artist: "Scrubb", tag: "thai" },
+        { title: "รอยยิ้ม", artist: "Scrubb", tag: "thai" },
+        { title: "ฤดูร้อน", artist: "Paradox", tag: "thai" },
+        { title: "ทุ้มอยู่ในใจ", artist: "Big Ass", tag: "thai" },
+        { title: "ขอ", artist: "Lomosonic", tag: "thai" },
+        { title: "แอบดี", artist: "Stamp", tag: "thai" },
+        { title: "มันคงเป็นความรัก", artist: "Stamp", tag: "thai" },
+        { title: "ลมแล้ง", artist: "YENTED", tag: "thai" },
+        { title: "ถ้าเธอ", artist: "Stamp x Violette", tag: "thai" },
+        { title: "ซูลูปาก้า ตาป้าก้า", artist: "THE DARKEST ROMANCE", tag: "thai" },
+        { title: "กระจกวิเศษ", artist: "Enchanté", tag: "thai" },
+        { title: "แค่เธอ", artist: "Jeff Satur", tag: "thai" },
+        { title: "ลืมไปแล้วว่าลืมยังไง", artist: "Jeff Satur", tag: "thai" },
+        { title: "ก่อนฤดูฝน", artist: "The TOYS", tag: "thai" },
+        { title: "หน้าหนาวที่แล้ว", artist: "The TOYS", tag: "thai" },
+        { title: "เมษา", artist: "Fellow Fellow", tag: "thai" },
+        { title: "เกี่ยวกันไหม", artist: "Ink Waruntorn", tag: "thai" },
+        { title: "ดีใจด้วยนะ", artist: "Ink Waruntorn", tag: "thai" },
+        { title: "โลกที่ไม่มีเธอ", artist: "PORTRAIT", tag: "thai" },
+        { title: "ขีดอันตราย", artist: "Aoy Amarin", tag: "thai" },
+        { title: "จำเก่ง", artist: "F.HERO x Tilly Birds", tag: "thai" },
+        { title: "สลักจิต", artist: "Pop Pongkool", tag: "thai" },
+        { title: "พิจารณา", artist: "Musketeers", tag: "thai" },
+        { title: "ใจกลางเมือง", artist: "Labanoon", tag: "thai" },
+        { title: "เชือกวิเศษ", artist: "Labanoon", tag: "thai" },
+        { title: "พลังงานจน", artist: "Labanoon", tag: "thai" },
+        { title: "ภูมิแพ้กรุงเทพ", artist: "Pang Nakarin", tag: "thai" },
+        { title: "ความเชื่อ", artist: "Bodyslam", tag: "thai" },
+        { title: "อกหัก", artist: "Bodyslam", tag: "thai" },
+        { title: "แสงสุดท้าย", artist: "Bodyslam", tag: "thai" },
+        { title: "ยาพิษ", artist: "Bodyslam", tag: "thai" },
+        { title: "เรือเล็กควรออกจากฝั่ง", artist: "Bodyslam", tag: "thai" },
+        { title: "คนมีเสน่ห์", artist: "Pang Nakarin", tag: "thai" },
+        { title: "คิดถึง", artist: "Bodyslam", tag: "thai" },
+        { title: "ปลายสายรุ้ง", artist: "Paradox", tag: "thai" },
+        { title: "รักเธอไปทุกวัน", artist: "Potato", tag: "thai" },
+        { title: "เธอยัง", artist: "Potato", tag: "thai" },
+        { title: "เพียงพอ", artist: "Potato", tag: "thai" },
+        { title: "ไม่ให้เธอไป", artist: "Potato", tag: "thai" },
+        { title: "ขอบคุณที่รักกัน", artist: "Potato", tag: "thai" },
+        { title: "กลัว", artist: "Tattoo Colour", tag: "thai" },
+        { title: "ขาหมู", artist: "Tattoo Colour", tag: "thai" },
+        { title: "ฟ้า", artist: "Tattoo Colour", tag: "thai" },
+        { title: "โกหก", artist: "Tattoo Colour", tag: "thai" },
+        { title: "ซินเดอเรลล่า", artist: "Tattoo Colour", tag: "thai" },
+        { title: "จำทำไม", artist: "Tattoo Colour", tag: "thai" },
+        { title: "รักแรกพบ", artist: "Tattoo Colour", tag: "thai" },
 
-        function randomSong() {
-            // สุ่ม index
-            const randomIndex = Math.floor(Math.random() * playlist.length);
-            const song = playlist[randomIndex];
+        // === INTERNATIONAL (100+ เพลง) ===
+        { title: "APT.", artist: "Rosé & Bruno Mars", tag: "inter" },
+        { title: "Die With A Smile", artist: "Lady Gaga & Bruno Mars", tag: "inter" },
+        { title: "Birds of a Feather", artist: "Billie Eilish", tag: "inter" },
+        { title: "Espresso", artist: "Sabrina Carpenter", tag: "inter" },
+        { title: "Flowers", artist: "Miley Cyrus", tag: "inter" },
+        { title: "Cruel Summer", artist: "Taylor Swift", tag: "inter" },
+        { title: "Blinding Lights", artist: "The Weeknd", tag: "inter" },
+        { title: "Stay", artist: "The Kid LAROI", tag: "inter" },
+        { title: "As It Was", artist: "Harry Styles", tag: "inter" },
+        { title: "Anti-Hero", artist: "Taylor Swift", tag: "inter" },
+        { title: "Fortnight", artist: "Taylor Swift", tag: "inter" },
+        { title: "Vampire", artist: "Olivia Rodrigo", tag: "inter" },
+        { title: "Bad Idea Right?", artist: "Olivia Rodrigo", tag: "inter" },
+        { title: "Kill Bill", artist: "SZA", tag: "inter" },
+        { title: "Snooze", artist: "SZA", tag: "inter" },
+        { title: "Paint The Town Red", artist: "Doja Cat", tag: "inter" },
+        { title: "Seven", artist: "Jungkook feat. Latto", tag: "inter" },
+        { title: "Water", artist: "Tyla", tag: "inter" },
+        { title: "Greedy", artist: "Tate McRae", tag: "inter" },
+        { title: "Houdini", artist: "Dua Lipa", tag: "inter" },
+        { title: "Levitating", artist: "Dua Lipa", tag: "inter" },
+        { title: "Dance The Night", artist: "Dua Lipa", tag: "inter" },
+        { title: "Shape of You", artist: "Ed Sheeran", tag: "inter" },
+        { title: "Perfect", artist: "Ed Sheeran", tag: "inter" },
+        { title: "Bad Habits", artist: "Ed Sheeran", tag: "inter" },
+        { title: "Peaches", artist: "Justin Bieber", tag: "inter" },
+        { title: "Ghost", artist: "Justin Bieber", tag: "inter" },
+        { title: "STAY", artist: "Justin Bieber", tag: "inter" },
+        { title: "Golden Hour", artist: "JVKE", tag: "inter" },
+        { title: "Until I Found You", artist: "Stephen Sanchez", tag: "inter" },
+        { title: "Sunroof", artist: "Nicky Youre", tag: "inter" },
+        { title: "About Damn Time", artist: "Lizzo", tag: "inter" },
+        { title: "Unholy", artist: "Sam Smith", tag: "inter" },
+        { title: "I'm Not Here To Make Friends", artist: "Sam Smith", tag: "inter" },
+        { title: "Starboy", artist: "The Weeknd", tag: "inter" },
+        { title: "Save Your Tears", artist: "The Weeknd", tag: "inter" },
+        { title: "Creepin'", artist: "Metro Boomin", tag: "inter" },
+        { title: "Heat Waves", artist: "Glass Animals", tag: "inter" },
+        { title: "Believer", artist: "Imagine Dragons", tag: "inter" },
+        { title: "Thunder", artist: "Imagine Dragons", tag: "inter" },
+        { title: "Enemy", artist: "Imagine Dragons", tag: "inter" },
+        { title: "Counting Stars", artist: "OneRepublic", tag: "inter" },
+        { title: "I Ain't Worried", artist: "OneRepublic", tag: "inter" },
+        { title: "Night Changes", artist: "One Direction", tag: "inter" },
+        { title: "Story of My Life", artist: "One Direction", tag: "inter" },
+        { title: "Steal My Girl", artist: "One Direction", tag: "inter" },
+        { title: "Sugar", artist: "Maroon 5", tag: "inter" },
+        { title: "Girls Like You", artist: "Maroon 5", tag: "inter" },
+        { title: "Memories", artist: "Maroon 5", tag: "inter" },
+        { title: "Payphone", artist: "Maroon 5", tag: "inter" },
+        { title: "Maps", artist: "Maroon 5", tag: "inter" },
+        { title: "Animals", artist: "Maroon 5", tag: "inter" },
+        { title: "Someone Like You", artist: "Adele", tag: "inter" },
+        { title: "Rolling in the Deep", artist: "Adele", tag: "inter" },
+        { title: "Hello", artist: "Adele", tag: "inter" },
+        { title: "Easy On Me", artist: "Adele", tag: "inter" },
+        { title: "Love Yourself", artist: "Justin Bieber", tag: "inter" },
+        { title: "Sorry", artist: "Justin Bieber", tag: "inter" },
+        { title: "What Do You Mean?", artist: "Justin Bieber", tag: "inter" },
+        { title: "Baby", artist: "Justin Bieber", tag: "inter" },
+        { title: "Boyfriend", artist: "Justin Bieber", tag: "inter" },
+        { title: "Intentions", artist: "Justin Bieber", tag: "inter" },
+        { title: "That's What I Like", artist: "Bruno Mars", tag: "inter" },
+        { title: "24K Magic", artist: "Bruno Mars", tag: "inter" },
+        { title: "Uptown Funk", artist: "Bruno Mars", tag: "inter" },
+        { title: "Versace on the Floor", artist: "Bruno Mars", tag: "inter" },
+        { title: "Just the Way You Are", artist: "Bruno Mars", tag: "inter" },
+        { title: "Grenade", artist: "Bruno Mars", tag: "inter" },
+        { title: "Marry You", artist: "Bruno Mars", tag: "inter" },
+        { title: "Count On Me", artist: "Bruno Mars", tag: "inter" },
+        { title: "Lazy Song", artist: "Bruno Mars", tag: "inter" },
+        { title: "Talking to the Moon", artist: "Bruno Mars", tag: "inter" },
+        { title: "Locked Out of Heaven", artist: "Bruno Mars", tag: "inter" },
+        { title: "Treasure", artist: "Bruno Mars", tag: "inter" },
+        { title: "When I Was Your Man", artist: "Bruno Mars", tag: "inter" },
+        { title: "Wake Me Up", artist: "Avicii", tag: "inter" },
+        { title: "Levels", artist: "Avicii", tag: "inter" },
+        { title: "The Nights", artist: "Avicii", tag: "inter" },
+        { title: "Waiting For Love", artist: "Avicii", tag: "inter" },
+        { title: "Closer", artist: "The Chainsmokers", tag: "inter" },
+        { title: "Something Just Like This", artist: "The Chainsmokers", tag: "inter" },
+        { title: "Don't Let Me Down", artist: "The Chainsmokers", tag: "inter" },
+        { title: "Paris", artist: "The Chainsmokers", tag: "inter" },
+        { title: "Roses", artist: "The Chainsmokers", tag: "inter" },
+        { title: "All We Know", artist: "The Chainsmokers", tag: "inter" },
+        { title: "Let Me Love You", artist: "DJ Snake ft. Justin Bieber", tag: "inter" },
+        { title: "Middle", artist: "DJ Snake", tag: "inter" },
+        { title: "Taki Taki", artist: "DJ Snake", tag: "inter" },
+        { title: "Lean On", artist: "Major Lazer", tag: "inter" },
+        { title: "Cold Water", artist: "Major Lazer", tag: "inter" },
+        { title: "Light It Up", artist: "Major Lazer", tag: "inter" },
+        { title: "Titanium", artist: "David Guetta", tag: "inter" },
+        { title: "Without You", artist: "David Guetta", tag: "inter" },
+        { title: "Hey Mama", artist: "David Guetta", tag: "inter" },
+        { title: "Scared to be Lonely", artist: "Martin Garrix", tag: "inter" },
+        { title: "In the Name of Love", artist: "Martin Garrix", tag: "inter" },
+        { title: "Summer", artist: "Calvin Harris", tag: "inter" },
+        { title: "This Is What You Came For", artist: "Calvin Harris", tag: "inter" },
+        { title: "How Deep Is Your Love", artist: "Calvin Harris", tag: "inter" },
+        { title: "Blame", artist: "Calvin Harris", tag: "inter" },
 
-            // ดึง Element มาจัดการ
-            const titleEl = document.getElementById('song-title');
-            const artistEl = document.getElementById('artist-name');
-            const linkEl = document.getElementById('yt-link');
-            const displayDiv = document.querySelector('.song-display');
+        // === K-POP / ASIA (100+ เพลง) ===
+        { title: "Mantra", artist: "JENNIE", tag: "asia" },
+        { title: "Supernova", artist: "aespa", tag: "asia" },
+        { title: "Ditto", artist: "NewJeans", tag: "asia" },
+        { title: "Magnetic", artist: "ILLIT", tag: "asia" },
+        { title: "Seven", artist: "Jungkook", tag: "asia" },
+        { title: "Cupid", artist: "Fifty Fifty", tag: "asia" },
+        { title: "Love Dive", artist: "IVE", tag: "asia" },
+        { title: "Perfect Night", artist: "Le Sserafim", tag: "asia" },
+        { title: "How Sweet", artist: "NewJeans", tag: "asia" },
+        { title: "Hype Boy", artist: "NewJeans", tag: "asia" },
+        { title: "Attention", artist: "NewJeans", tag: "asia" },
+        { title: "OMG", artist: "NewJeans", tag: "asia" },
+        { title: "Super Shy", artist: "NewJeans", tag: "asia" },
+        { title: "ETA", artist: "NewJeans", tag: "asia" },
+        { title: "Bubble Gum", artist: "NewJeans", tag: "asia" },
+        { title: "Whiplash", artist: "aespa", tag: "asia" },
+        { title: "Armageddon", artist: "aespa", tag: "asia" },
+        { title: "Drama", artist: "aespa" , tag: "asia" },
+        { title: "Spicy", artist: "aespa" , tag: "asia" },
+        { title: "Savage", artist: "aespa" , tag: "asia" },
+        { title: "Next Level", artist: "aespa" , tag: "asia" },
+        { title: "Black Mamba", artist: "aespa" , tag: "asia" },
+        { title: "I AM", artist: "IVE", tag: "asia" },
+        { title: "Baddie", artist: "IVE", tag: "asia" },
+        { title: "Kitsch", artist: "IVE", tag: "asia" },
+        { title: "After LIKE", artist: "IVE", tag: "asia" },
+        { title: "ELEVEN", artist: "IVE", tag: "asia" },
+        { title: "Fearless", artist: "LE SSERAFIM", tag: "asia" },
+        { title: "Antifragile", artist: "LE SSERAFIM", tag: "asia" },
+        { title: "UNFORGIVEN", artist: "LE SSERAFIM", tag: "asia" },
+        { title: "Smart", artist: "LE SSERAFIM", tag: "asia" },
+        { title: "EASY", artist: "LE SSERAFIM", tag: "asia" },
+        { title: "SHEESH", artist: "BABYMONSTER", tag: "asia" },
+        { title: "BATTER UP", artist: "BABYMONSTER", tag: "asia" },
+        { title: "LIKE THAT", artist: "BABYMONSTER", tag: "asia" },
+        { title: "FOREVER", artist: "BABYMONSTER", tag: "asia" },
+        { title: "Stuck In The Middle", artist: "BABYMONSTER", tag: "asia" },
+        { title: "Pink Venom", artist: "BLACKPINK", tag: "asia" },
+        { title: "Shut Down", artist: "BLACKPINK", tag: "asia" },
+        { title: "How You Like That", artist: "BLACKPINK", tag: "asia" },
+        { title: "Lovesick Girls", artist: "BLACKPINK", tag: "asia" },
+        { title: "DDU-DU DDU-DU", artist: "BLACKPINK", tag: "asia" },
+        { title: "Kill This Love", artist: "BLACKPINK", tag: "asia" },
+        { title: "As If It's Your Last", artist: "BLACKPINK", tag: "asia" },
+        { title: "Boombayah", artist: "BLACKPINK", tag: "asia" },
+        { title: "Whistle", artist: "BLACKPINK", tag: "asia" },
+        { title: "Solo", artist: "JENNIE", tag: "asia" },
+        { title: "You & Me", artist: "JENNIE", tag: "asia" },
+        { title: "On The Ground", artist: "ROSÉ", tag: "asia" },
+        { title: "Gone", artist: "ROSÉ", tag: "asia" },
+        { title: "LALISA", artist: "LISA", tag: "asia" },
+        { title: "MONEY", artist: "LISA", tag: "asia" },
+        { title: "ROCKSTAR", artist: "LISA", tag: "asia" },
+        { title: "NEW WOMAN", artist: "LISA", tag: "asia" },
+        { title: "FLOWER", artist: "JISOO", tag: "asia" },
+        { title: "Dynamite", artist: "BTS", tag: "asia" },
+        { title: "Butter", artist: "BTS", tag: "asia" },
+        { title: "Permission to Dance", artist: "BTS", tag: "asia" },
+        { title: "Boy With Luv", artist: "BTS", tag: "asia" },
+        { title: "DNA", artist: "BTS", tag: "asia" },
+        { title: "Fake Love", artist: "BTS", tag: "asia" },
+        { title: "IDOL", artist: "BTS", tag: "asia" },
+        { title: "Blood Sweat & Tears", artist: "BTS", tag: "asia" },
+        { title: "Spring Day", artist: "BTS", tag: "asia" },
+        { title: "Life Goes On", artist: "BTS", tag: "asia" },
+        { title: "Standing Next to You", artist: "Jungkook", tag: "asia" },
+        { title: "Like Crazy", artist: "Jimin", tag: "asia" },
+        { title: "Love Me Again", artist: "V", tag: "asia" },
+        { title: "Haegeum", artist: "Agust D", tag: "asia" },
+        { title: "Wild Flower", artist: "RM", tag: "asia" },
+        { title: "On The Street", artist: "j-hope", tag: "asia" },
+        { title: "The Astronaut", artist: "Jin", tag: "asia" },
+        { title: "Tomboys", artist: "(G)I-DLE", tag: "asia" },
+        { title: "Nxde", artist: "(G)I-DLE", tag: "asia" },
+        { title: "Queencard", artist: "(G)I-DLE", tag: "asia" },
+        { title: "Super Lady", artist: "(G)I-DLE", tag: "asia" },
+        { title: "Fate", artist: "(G)I-DLE", tag: "asia" },
+        { title: "Klaxon", artist: "(G)I-DLE", tag: "asia" },
+        { title: "Talk that Talk", artist: "TWICE", tag: "asia" },
+        { title: "Fancy", artist: "TWICE", tag: "asia" },
+        { title: "Feel Special", artist: "TWICE", tag: "asia" },
+        { title: "The Feels", artist: "TWICE", tag: "asia" },
+        { title: "I CAN'T STOP ME", artist: "TWICE", tag: "asia" },
+        { title: "Cheer Up", artist: "TWICE", tag: "asia" },
+        { title: "TT", artist: "TWICE", tag: "asia" },
+        { title: "What is Love?", artist: "TWICE", tag: "asia" },
+        { title: "Nayeon", artist: "POP!", tag: "asia" },
+        { title: "ABCD", artist: "Nayeon", tag: "asia" },
+        { title: "Killin' Me Good", artist: "Jihyo", tag: "asia" },
+        { title: "SNEAKERS", artist: "ITZY", tag: "asia" },
+        { title: "WANNABE", artist: "ITZY", tag: "asia" },
+        { title: "LOCO", artist: "ITZY", tag: "asia" },
+        { title: "CAKE", artist: "ITZY", tag: "asia" },
+        { title: "UNTOUCHABLE", artist: "ITZY", tag: "asia" },
+        { title: "MANIAC", artist: "Stray Kids", tag: "asia" },
+        { title: "S-Class", artist: "Stray Kids", tag: "asia" },
+        { title: "LALALALA", artist: "Stray Kids", tag: "asia" },
+        { title: "Chk Chk Boom", artist: "Stray Kids", tag: "asia" },
+        { title: "God's Menu", artist: "Stray Kids", tag: "asia" },
+        { title: "Back Door", artist: "Stray Kids", tag: "asia" }
+    ];
 
-            // ใส่ข้อมูลลงหน้าเว็บ
-            titleEl.innerText = song.title;
-            artistEl.innerText = "ศิลปิน: " + song.artist;
 
-            // สร้างลิงค์ค้นหา YouTube
-            // ใช้ encodeURIComponent เพื่อแปลงชื่อเพลงที่มีวรรคหรือภาษาไทยให้เป็น URL ที่ถูกต้อง
-            const searchQuery = encodeURIComponent(song.title + " " + song.artist);
-            linkEl.href = `https://www.youtube.com/results?search_query=${searchQuery}`;
-            
-            // แสดงปุ่มฟังเพลง
-            linkEl.style.display = "inline-block";
+    // หมายเหตุ: เพื่อประหยัดพื้นที่แชท ผมใส่ตัวอย่างหมวดละ 10 เพลง 
+    // คุณสามารถก๊อปวางบรรทัดเดิมซ้ำๆ แล้วเปลี่ยนชื่อเพลงให้ครบ 300 ได้เลยครับ!
 
-            // เพิ่ม Animation
-            displayDiv.classList.remove('fade-in');
-            void displayDiv.offsetWidth; // Trigger reflow
-            displayDiv.classList.add('fade-in');
-        }
-    </script>
+    function setCategory(cat, btn) {
+        currentCategory = cat;
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    function randomSong() {
+        // กรองเพลงตามหมวด
+        const filtered = currentCategory === 'all' 
+            ? playlist 
+            : playlist.filter(s => s.tag === currentCategory);
+
+        const song = filtered[Math.floor(Math.random() * filtered.length)];
+        
+        const titleEl = document.getElementById('song-title');
+        const artistEl = document.getElementById('artist-name');
+        const linkEl = document.getElementById('yt-link');
+        const area = document.getElementById('display-area');
+
+        titleEl.innerText = song.title;
+        artistEl.innerText = song.artist;
+        
+        const query = encodeURIComponent(song.title + " " + song.artist);
+        linkEl.href = `https://www.youtube.com/results?search_query=${query}`;
+        linkEl.style.display = "block";
+
+        area.classList.remove('fade-in');
+        void area.offsetWidth;
+        area.classList.add('fade-in');
+    }
+</script>
 </body>
 </html>
